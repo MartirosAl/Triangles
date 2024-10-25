@@ -12,7 +12,6 @@ void Print_Triangles(Triangle* triangles_, int size_)
 
 int Expansion(Triangle*& arr_, size_t& size_)
 {
-   int old_count = arr_->Get_Count();
 
    Triangle* temp = new Triangle[size_];
 
@@ -22,7 +21,7 @@ int Expansion(Triangle*& arr_, size_t& size_)
    }
    delete[] arr_;
 
-   arr_->Set_Count(old_count - size_);
+   arr_->Set_Count(1);
 
    arr_ = new Triangle[size_+1];
 
