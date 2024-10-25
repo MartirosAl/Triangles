@@ -9,8 +9,8 @@
 int main()
 {
 
-   SetConsoleCP(1251); //из Windows.h для ввода
    SetConsoleOutputCP(1251); //для вывода
+   SetConsoleCP(1251); //из Windows.h для ввода
 
    Triangle* triangles = nullptr;
    size_t size = 0;
@@ -59,6 +59,8 @@ int main()
          if (!scanf("%d", &choice_triangle))
             return 4;
          system("cls");
+         if (!triangles)
+            return 3;
          printf("%lf", triangles[choice_triangle].Get_Area_of_Triangle());
 
          system("pause");

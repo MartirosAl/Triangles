@@ -1,16 +1,15 @@
 #include "Triangle.h"
 
-int Triangle::count = 0;
+int Triangle::count = 1;
 
-void Triangle::Set_Name()
-{
-   name = new char[100];
-   sprintf(name, "%s %d", "Треугольник №", ++count);
-}
 
 Triangle::Triangle()
 {
-   Set_Name();
+   name = new char[100];
+
+   sprintf(name, "Triangle %d", count);
+   count++;
+
    s_one_two = 0;
    s_two_three = 0;
    s_three_one = 0;
@@ -18,7 +17,11 @@ Triangle::Triangle()
 
 Triangle::Triangle(double one_x_, double one_y_, double two_x_, double two_y_, double three_x_, double three_y_)
 {
-   Set_Name();
+   name = new char[100];
+
+   sprintf(name, "Triangle %d", count);
+   count++;
+
    p_one(one_x_, one_y_);
    p_two(two_x_, two_y_);
    p_three(three_x_, three_y_);
@@ -26,6 +29,19 @@ Triangle::Triangle(double one_x_, double one_y_, double two_x_, double two_y_, d
    s_one_two = sqrt(pow(one_x_ - two_x_, 2) + pow(one_y_ - two_y_, 2));
    s_two_three = sqrt(pow(two_x_ - three_x_, 2) + pow(two_y_ - three_y_, 2));
    s_three_one = sqrt(pow(three_x_ - one_x_, 2) + pow(three_y_ - one_y_, 2));
+}
+
+Triangle::Triangle(const Triangle& other_)
+{
+   name = other_.name;
+
+   p_one = other_.p_one;
+   p_two = other_.p_two;
+   p_three = other_.p_three;
+
+   s_one_two = sqrt(pow(p_one.Get_X() - p_two.Get_X(), 2) + pow(p_one.Get_Y() - p_two.Get_Y(), 2));
+   s_two_three = sqrt(pow(p_two.Get_X() - p_three.Get_X(), 2) + pow(p_two.Get_Y() - p_three.Get_Y(), 2));
+   s_three_one = sqrt(pow(p_three.Get_X() - p_one.Get_X(), 2) + pow(p_three.Get_Y() - p_one.Get_Y(), 2));
 }
 
 bool Triangle::operator>(Triangle other_)
@@ -46,14 +62,15 @@ bool Triangle::operator>=(Triangle other_)
 
 bool Triangle::operator==(Triangle other_)
 {
-   return !strcmp(name, other_.name);
+   return Get_Area_of_Triangle() == other_.Get_Area_of_Triangle();
 }
 
-Triangle Triangle::operator=(Triangle& other_)
+Triangle& Triangle::operator=(Triangle& other_)
 {
    if (&other_ == this) return *this;
 
    delete[] name;
+   name = new char[100];
    strcpy(name, other_.name);
 
    p_one = other_.p_one;
@@ -94,6 +111,17 @@ void Triangle::Set_Triangle(double one_x_, double one_y_, double two_x_, double 
    s_three_one = sqrt(pow(three_x_ - one_x_, 2) + pow(three_y_ - one_y_, 2));
 }
 
+void Triangle::Set_Triangle(Point p1_, Point p2_, Point p3_)
+{
+   p_one = p1_;
+   p_two = p2_;
+   p_three = p3_;
+
+   s_one_two = sqrt(pow(p1_.Get_X() - p2_.Get_X(), 2) + pow(p1_.Get_Y() - p2_.Get_Y(), 2));
+   s_two_three = sqrt(pow(p2_.Get_X() - p3_.Get_X(), 2) + pow(p2_.Get_Y() - p3_.Get_Y(), 2));
+   s_three_one = sqrt(pow(p3_.Get_X() - p1_.Get_X(), 2) + pow(p3_.Get_Y() - p1_.Get_Y(), 2));
+}
+
 void Triangle::Set_P_One(double one_x_, double one_y_)
 {
    p_one.Set_X(one_x_);
@@ -121,17 +149,42 @@ void Triangle::Set_P_Three(double three_x_, double three_y_)
    s_three_one = sqrt(pow(three_x_ - p_one.Get_X(), 2) + pow(three_y_ - p_one.Get_Y(), 2));
 }
 
+int Triangle::Get_Count()
+{
+   return count;
+}
+
+void Triangle::Set_Count(int count_)
+{
+   count = count_;
+}
+
 void Triangle::Print_Triangle()
 {
-   printf("%-5s ", name);
+   printf("Name: %s\n", name);
+   printf("Coordinates:");
    p_one.Print_Points();
    p_two.Print_Points();
    p_three.Print_Points();
-   printf("%g %g %g\n", s_one_two, s_two_three, s_three_one);
+   printf("\n");
+   printf("Sides: %lf %lf %lf\n", s_one_two, s_two_three, s_three_one);
 }
 
 double Triangle::Get_Area_of_Triangle()
 {
+   double p = (s_one_two + s_two_three + s_three_one) / 2;
+
+   double area = sqrt(p * (p - s_one_two) * (p - s_two_three) * (p - s_three_one));
+
+   return area;
+}
+
+double Triangle::Get_Area_of_Triangle(Point p1_, Point p2_, Point p3_)
+{
+   double s_one_two = sqrt(pow(p1_.Get_X() - p2_.Get_X(), 2) + pow(p1_.Get_Y() - p2_.Get_Y(), 2));
+   double s_two_three = sqrt(pow(p2_.Get_X() - p3_.Get_X(), 2) + pow(p2_.Get_Y() - p3_.Get_Y(), 2));
+   double s_three_one = sqrt(pow(p3_.Get_X() - p1_.Get_X(), 2) + pow(p3_.Get_Y() - p1_.Get_Y(), 2));
+
    double p = (s_one_two + s_two_three + s_three_one) / 2;
 
    double area = sqrt(p * (p - s_one_two) * (p - s_two_three) * (p - s_three_one));
@@ -185,6 +238,20 @@ bool Triangle::Triangle_Includes_Point(Point point_)
 
    return false;
 }
+
+
+bool Triangle::Triangle_Includes_Point_Using_Area(Point point_)
+{
+   double area1 = Get_Area_of_Triangle(p_one, p_two, point_);
+   double area2 = Get_Area_of_Triangle(p_one, p_three, point_);
+   double area3 = Get_Area_of_Triangle(p_two, p_three, point_);
+
+   if (area1 + area2 + area3 == Get_Area_of_Triangle())
+      return true;
+   else
+      return false;
+}
+
 
 bool Triangle::Triangle_Includes_Triangle(Triangle other_)
 {

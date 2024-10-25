@@ -76,5 +76,5 @@
 
    void Point::Print_Points()
    {
-      printf("(%f, %f) ", x, y);
+      printf("(%.3lf, %.3lf) ", x, y);
    }

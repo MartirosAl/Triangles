@@ -2,18 +2,18 @@
 
 void Print_Triangles(Triangle* triangles_, int size_)
 {
-
-   printf("  #  |\t Имя              |                    Координаты                   |               Стороны              |\n");
-   for (int i = 0; i < size_; i++)
+   printf("+-------------------------------------------------------------------------------------------------------\n");
+   for (size_t i = 0; i < size_; i++)
    {
-      printf(" %-3d ", i+1);
       triangles_[i].Print_Triangle();
+      printf("+-------------------------------------------------------------------------------------------------------\n");
    }
-   printf("\\_________________________________________________________________________________________________________________/");
 }
 
 int Expansion(Triangle*& arr_, size_t& size_)
 {
+   int old_count = arr_->Get_Count();
+
    Triangle* temp = new Triangle[size_];
 
    for (size_t i = 0; i < size_; ++i)
@@ -21,12 +21,16 @@ int Expansion(Triangle*& arr_, size_t& size_)
       temp[i] = arr_[i];
    }
    delete[] arr_;
+
+   arr_->Set_Count(old_count - size_);
+
    arr_ = new Triangle[size_+1];
 
    for (size_t i = 0; i < size_; ++i)
    {
       arr_[i] = temp[i];
    }
+
    return 0;
 }
 
@@ -55,18 +59,17 @@ void Menu()
 
 bool Is_Triangle(double one_x_, double one_y_, double two_x_, double two_y_, double three_x_, double three_y_)
 {
-   double side_one = pow(one_x_ - two_x_, 2); //0-0 = 0
-   side_one = side_one+ pow(one_y_ - two_y_, 2);//3
-   side_one = sqrt(side_one);//3
-   double side_two = pow(two_x_ - three_x_, 2) ;//5
-   side_two = side_two + pow(two_y_ - three_y_, 2);//5
-   side_two = sqrt(side_two);//5
-   double side_three = pow(three_x_ - one_x_, 2);//4
-   side_three = side_three + pow(three_y_ - one_y_, 2);//4
-   side_three = sqrt(side_three);//4
+   double side_one = sqrt(pow(one_x_ - two_x_, 2) + pow(one_y_ - two_y_, 2)); //0-0 = 0
+
+   double side_two = sqrt(pow(two_x_ - three_x_, 2) + pow(two_y_ - three_y_, 2));//5
+
+   double side_three = sqrt(pow(three_x_ - one_x_, 2) + pow(three_y_ - one_y_, 2));//4
+
 
    if (side_one + side_two > side_three && side_one + side_three > side_two && side_two + side_three > side_one)
       return true;
 
    return false;
 }
+
+
